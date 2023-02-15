@@ -19,7 +19,7 @@ typedef struct vertex {
 	vec2 position;
 	vec3 color;
 	vec2 uv;
-} __attribute__((packed)) vertex;
+} vertex;
 
 typedef struct renderer {
 	GLuint VAO;
@@ -30,8 +30,8 @@ typedef struct renderer {
 	const GLchar *frag_source; // FREE
 	GLuint frag_shader;
 	GLuint shader_program;
-	vertex *vertices; // FREE
-	GLuint *indices; // FREE
+	vertex *vertices;
+	GLuint *indices;
 	GLint num_vertices;
 	GLint num_indices;
 	GLuint uniform_time;
@@ -39,24 +39,32 @@ typedef struct renderer {
 	GLuint uniform_window_size;
 	GLuint uniform_scale;
 	GLuint uniform_offset_position;
+	GLuint uniform_tex_size;
+	GLuint uniform_lanczos;
+	GLuint uniform_lanczos_antiringing;
 	GLint texwidth, texheight, texchannels;
 	GLint texunit;
 	GLuint texture;
-	stbi_uc *texdata;
+	stbi_uc *texdata; // FREE
 	GLfloat value_time;
+	GLint value_lanczos;
+	GLfloat value_lanczos_antiringing;
 	GLfloat value_mouse_x, value_mouse_y;
 	GLfloat value_window_size_x, value_window_size_y;
 	GLfloat value_scale_x, value_scale_y;
 	GLfloat value_offset_position_x, value_offset_position_y;
-} __attribute__((packed)) renderer;
+	GLfloat value_tex_size_x, value_tex_size_y;
+} renderer;
 
 typedef struct gl_data {
 	renderer background_renderer;
-	//renderer image_renderer;
+	renderer image_renderer;
 	//renderer menu_renderer;
 } gl_data;
 
 typedef struct window {
+	GLint high_quality_resampling;
+	GLfloat lanczos_anti_ringing;
 	GLint width, height;
 	GLboolean is_glfw;
 	GLFWwindow *instance;
@@ -65,9 +73,13 @@ typedef struct window {
 } window;
 
 GLint renderer_ready_background(window *w, GLint num_vtx, GLint num_ind, vertex *vtx, GLuint *ind, const GLchar *vert_path, const GLchar *frag_path, const GLchar *texture_path);
+GLint renderer_ready_image(window *w, GLint num_vtx, GLint num_ind, vertex *vtx, GLuint *ind, const GLchar *vert_path, const GLchar *frag_path, const GLchar *texture_path);
 GLint renderer_init_background(window *w);
+GLint renderer_init_image(window *w);
 void renderer_uniform_background(window *w);
+void renderer_uniform_image(window *w);
 void renderer_draw_background(window *w);
+void renderer_draw_image(window *w);
 void renderer_use(renderer *r);
 
 // GLFW callbacks.
@@ -79,6 +91,8 @@ void glfw_cursorpos_cb(GLFWwindow *w, GLdouble x, GLdouble y);
 void program_log_error(const GLchar *log);
 void program_log_warn(const GLchar *log);
 void program_log_info(const GLchar *log);
+
+int clean_exit(window *w, int code);
 
 #define NUM_TRIANGLE_VERTICES 3
 static vertex triangle_vertices[] = {
@@ -103,21 +117,21 @@ static GLuint triangle_indices[] = {
 
 #define NUM_RECT_VERTICES 4
 static vertex rect_vertices[] = {{
-		{1.0f,  1.0f},
+		{0.5f,  0.5f},
 		{1.0f, 1.0f, 1.0f},
-		{1.0f, 1.0f}
+		{-1.0f, -1.0f}
 	}, {
-		{1.0f,  -1.0f},
+		{0.5f,  -0.5f},
 		{1.0f, 1.0f, 1.0f},
-		{1.0f, 0.0f}
+		{-1.0f, 0.0f}
 	}, {
-		{-1.0f,  -1.0f},
+		{-0.5f,  -0.5f},
 		{1.0f, 1.0f, 1.0f},
 		{0.0f, 0.0f}
 	}, {
-		{-1.0f,  1.0f},
+		{-0.5f,  0.5f},
 		{1.0f, 1.0f, 1.0f},
-		{0.0f, 1.0f}
+		{0.0f, -1.0f}
 	}
 };
 
@@ -126,6 +140,5 @@ static GLuint rect_indices[] = {
 	0, 3, 2,
 	0, 1, 2
 };
-
 
 #endif // RENDER_H_

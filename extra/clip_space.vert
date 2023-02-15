@@ -10,6 +10,6 @@ out vec2 uv;
 
 void main(void) {
 	color = aCol;
-	uv = vec2(1.0f - aUV.x, 1.0f - aUV.y);
-	gl_Position = vec4(aPos, 0.0f, 1.0f);
+	uv = aUV;
+	gl_Position = vec4(aPos, 0.0, 1.0);
 }
