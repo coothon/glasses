@@ -3,7 +3,7 @@
 #version 460 core
 out vec4 FragColor;
 
-uniform sampler2D tex;
+layout (location = 1) uniform sampler2D tex;
 uniform int is_lanczos;
 uniform float anti_ringing;
 uniform vec2 tex_size;

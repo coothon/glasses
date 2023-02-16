@@ -9,9 +9,9 @@ const char *read_file(const char *path) {
 	if (!fp) return NULL;
 
 	long path_file_size = file_size(fp);
-	
-	file_contents = (char *)calloc((path_file_size+1L), sizeof(char));
-	// Is this necessary? May as well do it. -----^
+
+	file_contents = (char *)calloc((path_file_size + 1L), sizeof(char));
+	// Is this necessary? May as well do it. ------^
 	if (!file_contents) {
 		fclose(fp);
 		return NULL;

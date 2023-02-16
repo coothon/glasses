@@ -5,6 +5,6 @@
 #include <stdlib.h>
 
 const char *read_file(const char *path);
-long file_size(FILE *fp);
+long        file_size(FILE *fp);
 
 #endif // FILE_H_
